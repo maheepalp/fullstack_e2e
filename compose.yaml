@@ -1,0 +1,22 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    environment:
+      DB_URL: ${DB_URL:-jdbc:postgresql://host.docker.internal:5432/fullstack_e2e}
+      DB_USERNAME: ${DB_USERNAME:-expenses_app}
+      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in the project-root .env file}
+      SERVER_PORT: 8080
+      CORS_ALLOWED_ORIGIN: http://localhost:3000
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: /api
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "127.0.0.1:3000:80"
